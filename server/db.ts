@@ -33,12 +33,12 @@ function getPool(): pg.Pool {
   const poolConfig = {
     connectionString: connectionString || FALLBACK_CONNECTION,
     ssl: (isProduction || hasSupabaseUrl) ? { rejectUnauthorized: false } : undefined,
-    max: isServerless ? 2 : 10,
-    min: isServerless ? 0 : 2,
-    idleTimeoutMillis: isServerless ? 5000 : 30000,
-    connectionTimeoutMillis: isServerless ? 5000 : 15000,
-    statementTimeoutMillis: isServerless ? 8000 : 0,
-    allowExitOnIdle: isServerless ? true : false,
+    max: isServerless ? 10 : 10, // Increase max connections for serverless
+    min: isServerless ? 2 : 2,   // Keep minimum connections alive
+    idleTimeoutMillis: isServerless ? 30000 : 30000,
+    connectionTimeoutMillis: isServerless ? 10000 : 15000,
+    statementTimeoutMillis: isServerless ? 15000 : 0,
+    allowExitOnIdle: isServerless ? false : false, // Don't allow exit on idle to keep pool warm
     application_name: 'crm-app',
   };
   

@@ -42,8 +42,16 @@ async function initHandler() {
     const app = await createApp();
     handler = serverless(app, {
       binary: ['application/octet-stream'],
-      request: (req: any, res: any, app: any) => {
-        app(req, res);
+      request: (req: any, res: any, context: any) => {
+        // Ensure body is parsed if it's a string
+        if (typeof req.body === 'string' && req.headers['content-type']?.includes('application/json')) {
+          try {
+            req.body = JSON.parse(req.body);
+          } catch (e) {
+            console.error('Failed to parse body string:', e);
+          }
+        }
+        return app(req, res);
       },
     });
     console.log("Serverless handler initialized successfully");

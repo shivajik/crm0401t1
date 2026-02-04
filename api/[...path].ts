@@ -29,15 +29,12 @@ async function initHandler() {
     console.log("Warming up database pool...");
     try {
       const { pool } = await import("../server/db");
-      const client = await Promise.race([
-        pool.connect(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Pool warmup timeout')), 5000)
-        )
-      ]) as any;
-      await client.query("SELECT NOW()");
+      // Use a simpler connection test for warmup
+      const startTime = Date.now();
+      const client = await pool.connect();
+      await client.query("SELECT 1");
       client.release();
-      console.log("Database pool warmed up successfully");
+      console.log(`Database pool warmed up successfully in ${Date.now() - startTime}ms`);
     } catch (dbError: any) {
       console.error("Warning: Database warmup failed (non-critical):", dbError.message);
     }

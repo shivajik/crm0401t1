@@ -78,7 +78,7 @@ export async function createApp(): Promise<express.Express> {
 
     // Skip AI table initialization - already managed by migrations
     // Only run in production if explicitly needed
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       try {
         await initializeAITables();
       } catch (error) {
